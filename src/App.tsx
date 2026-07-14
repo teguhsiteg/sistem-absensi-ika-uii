@@ -42,6 +42,7 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { logAction } from './lib/audit';
 
 import { auth, db } from './firebase';
+import { sendTicketViaWhatsApp } from './ticketSender';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { collection, query, where, getDocs, doc, setDoc, updateDoc, deleteDoc, orderBy, limit } from 'firebase/firestore';
 
@@ -82,6 +83,10 @@ export default function App() {
   // Navigation / Route: 'public-landing' | 'public-register' | 'public-ticket' | 'public-lookup' | 'admin-login' | 'admin-panel' | 'public-scanner'
   const [route, setRoute] = React.useState<'public-landing' | 'public-register' | 'public-ticket' | 'public-lookup' | 'admin-login' | 'admin-panel' | 'public-scanner'>('public-landing');
 
+  // WhatsApp integration refs & state
+  const ticketRef = React.useRef<HTMLDivElement>(null);
+  const [isNewRegistration, setIsNewRegistration] = React.useState(false);
+
   // Toast notifications state
   interface Toast {
     id: string;
@@ -120,6 +125,23 @@ export default function App() {
   }, [showToast]);
 
   const [isScannerMode, setIsScannerMode] = React.useState(false);
+
+  React.useEffect(() => {
+    if (route === 'public-ticket' && activeTicket && activeEvent && isNewRegistration && ticketRef.current) {
+      setIsNewRegistration(false); // Only trigger once
+      showToast('Sedang memproses tiket & mengirim WhatsApp...', 'info');
+      sendTicketViaWhatsApp(
+        ticketRef.current,
+        activeTicket.id,
+        activeTicket.phone,
+        activeTicket.name,
+        activeEvent.title
+      ).then(success => {
+        if (success) showToast('Tiket berhasil dikirim ke WhatsApp Anda!', 'success');
+        else showToast('Gagal mengirim WhatsApp, tapi tiket berhasil dibuat.', 'error');
+      });
+    }
+  }, [route, activeTicket, activeEvent, isNewRegistration, showToast]);
 
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -394,6 +416,7 @@ export default function App() {
       await setDoc(doc(db, 'participants', id), newParticipant);
       
       setActiveTicket(newParticipant);
+      setIsNewRegistration(true);
       setRoute('public-ticket');
       setRegForm({
         name: '',
@@ -1133,7 +1156,7 @@ export default function App() {
       {/* 3. PUBLIC TICKET GENERATED SCREEN */}
       {route === 'public-ticket' && activeTicket && activeEvent && (
         <div className="max-w-md mx-auto px-4 py-12 w-full text-center space-y-6">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden">
+          <div ref={ticketRef} className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-lg overflow-hidden">
             {/* Header */}
             <div className="p-6 bg-amber-800 text-white border-b-4 border-amber-400 text-center relative">
               <div className="absolute inset-0 bg-gradient-to-t from-amber-950/80 to-transparent"></div>
