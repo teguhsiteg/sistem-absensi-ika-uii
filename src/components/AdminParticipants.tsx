@@ -357,8 +357,8 @@ export default function AdminParticipants({
         <body>
           <div class="badge-card">
             <div class="badge-header">
-              <h1>DPW IKA UII D.I.Y.</h1>
-              <p>Pelantikan Pengurus & Rakerwil</p>
+              <h1>${activeEvent?.organizer || 'DPW IKA UII D.I.Y.'}</h1>
+              <p>${activeEvent?.title}</p>
             </div>
             <div class="badge-body">
               <div class="qr-container">
@@ -370,7 +370,7 @@ export default function AdminParticipants({
               <p class="participant-inst">${selectedParticipant.instansi || 'Ikatan Keluarga Alumni UII'}</p>
             </div>
             <div class="badge-footer">
-              15 JULI 2026 • GRAND ROHAN JOGJA
+              ${activeEvent?.date ? activeEvent.date.toUpperCase() : ''} ${activeEvent?.date && activeEvent?.location ? '•' : ''} ${activeEvent?.location ? activeEvent.location.toUpperCase() : ''}
             </div>
           </div>
           <script>
@@ -1203,8 +1203,8 @@ export default function AdminParticipants({
             <div className="p-6 bg-slate-100 flex justify-center">
               <div className="w-[240px] h-[360px] bg-white dark:bg-slate-900 border-2 border-slate-900 rounded-2xl shadow-md overflow-hidden flex flex-col justify-between">
                 <div className="bg-emerald-800 text-white p-3 text-center border-b-2 border-amber-400">
-                  <h4 className="font-display font-bold text-[10px] tracking-wider uppercase m-0">DPW IKA UII D.I.Y.</h4>
-                  <p className="text-[7px] text-emerald-100 opacity-95 m-0.5 font-medium">PELANTIKAN PENGURUS & RAKERWIL</p>
+                  <h4 className="font-display font-bold text-[10px] tracking-wider uppercase m-0">{activeEvent?.organizer || 'DPW IKA UII D.I.Y.'}</h4>
+                  <p className="text-[7px] text-emerald-100 opacity-95 m-0.5 font-medium uppercase">{activeEvent?.title}</p>
                 </div>
                 
                 <div className="flex-1 flex flex-col items-center justify-center p-4 text-center">
@@ -1220,7 +1220,7 @@ export default function AdminParticipants({
                 </div>
 
                 <div className="bg-slate-900 text-slate-400 text-center text-[7px] p-2 tracking-wider font-semibold">
-                  GRAND ROHAN JOGJA • 15 JULI 2026
+                  {activeEvent?.location ? activeEvent.location.toUpperCase() : ''} {activeEvent?.date && activeEvent?.location ? '•' : ''} {activeEvent?.date ? activeEvent.date.toUpperCase() : ''}
                 </div>
               </div>
             </div>
