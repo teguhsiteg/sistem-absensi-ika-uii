@@ -127,23 +127,6 @@ export default function App() {
   const [isScannerMode, setIsScannerMode] = React.useState(false);
 
   React.useEffect(() => {
-    if (route === 'public-ticket' && activeTicket && activeEvent && isNewRegistration && ticketRef.current) {
-      setIsNewRegistration(false); // Only trigger once
-      showToast('Sedang memproses tiket & mengirim WhatsApp...', 'info');
-      sendTicketViaWhatsApp(
-        ticketRef.current,
-        activeTicket.id,
-        activeTicket.phone,
-        activeTicket.name,
-        activeEvent.title
-      ).then(success => {
-        if (success) showToast('Tiket berhasil dikirim ke WhatsApp Anda!', 'success');
-        else showToast('Gagal mengirim WhatsApp, tapi tiket berhasil dibuat.', 'error');
-      });
-    }
-  }, [route, activeTicket, activeEvent, isNewRegistration, showToast]);
-
-  React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (
       params.get('admin') === 'true' || 
@@ -220,6 +203,24 @@ export default function App() {
   const [loginForm, setLoginForm] = React.useState({ email: '', password: '' });
   const [loginError, setLoginError] = React.useState('');
   const [isAdminRegisterMode, setIsAdminRegisterMode] = React.useState(false);
+
+  // WhatsApp auto-send after registration
+  React.useEffect(() => {
+    if (route === 'public-ticket' && activeTicket && activeEvent && isNewRegistration && ticketRef.current) {
+      setIsNewRegistration(false); // Only trigger once
+      showToast('Sedang memproses tiket & mengirim WhatsApp...', 'info');
+      sendTicketViaWhatsApp(
+        ticketRef.current,
+        activeTicket.id,
+        activeTicket.phone,
+        activeTicket.name,
+        activeEvent.title
+      ).then(success => {
+        if (success) showToast('Tiket berhasil dikirim ke WhatsApp Anda!', 'success');
+        else showToast('Gagal mengirim WhatsApp, tapi tiket berhasil dibuat.', 'error');
+      });
+    }
+  }, [route, activeTicket, activeEvent, isNewRegistration, showToast]);
 
   // --- API BACKEND COMMUNICATORS ---
 
