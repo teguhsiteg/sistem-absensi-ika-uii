@@ -1,0 +1,79 @@
+{
+  "entities": {
+    "Event": {
+      "title": "Event",
+      "description": "Configuration for an event managed by the digital attendance system.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "The unique ID of the event." },
+        "title": { "type": "string", "description": "The title of the event." },
+        "date": { "type": "string", "description": "The date of the event in YYYY-MM-DD format." },
+        "time": { "type": "string", "description": "The start time of the event (e.g., 08:00)." },
+        "location": { "type": "string", "description": "The full physical location of the event." },
+        "mapsUrl": { "type": "string", "description": "The Google Maps location link." },
+        "bannerUrl": { "type": "string", "description": "The banner image URL." },
+        "logoUrl": { "type": "string", "description": "The logo image URL." },
+        "registrationDeadline": { "type": "string", "description": "The registration deadline ISO timestamp." },
+        "isActive": { "type": "boolean", "description": "Whether this is the currently active event." },
+        "isScannerActive": { "type": "boolean", "description": "Whether the QR scanner is active." },
+        "isRegistrationActive": { "type": "boolean", "description": "Whether registration is open." },
+        "successMessage": { "type": "string", "description": "The success message shown after registration." }
+      },
+      "required": ["id", "title", "date", "time", "location", "isActive", "isScannerActive", "isRegistrationActive"]
+    },
+    "Participant": {
+      "title": "Participant",
+      "description": "Details of a registered participant.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique registration ID (e.g., IKA-0001)." },
+        "eventId": { "type": "string", "description": "ID of the associated event." },
+        "name": { "type": "string", "description": "Full name of the participant." },
+        "phone": { "type": "string", "description": "WhatsApp or mobile phone number." },
+        "email": { "type": "string", "description": "Email address." },
+        "status": { "type": "string", "enum": ["Hadir", "Berhalangan"], "description": "Rencana kehadiran." },
+        "reason": { "type": "string", "description": "Reason for being unable to attend." },
+        "instansi": { "type": "string", "description": "Affiliation or graduation year." },
+        "jabatan": { "type": "string", "description": "Role/category of participant." },
+        "kota": { "type": "string", "description": "Origin city." },
+        "catatan": { "type": "string", "description": "Additional notes." },
+        "consent": { "type": "boolean", "description": "Consent for data processing." },
+        "subscribeNewsletter": { "type": "boolean", "description": "Subscribe to newsletter preference." },
+        "createdAt": { "type": "string", "description": "ISO creation timestamp." },
+        "checkedIn": { "type": "boolean", "description": "Whether the participant has checked in." },
+        "checkedInAt": { "type": "string", "description": "ISO check-in timestamp." },
+        "ipAddress": { "type": "string", "description": "IP Address of registrant." },
+        "userAgent": { "type": "string", "description": "User agent of registrant." }
+      },
+      "required": ["id", "eventId", "name", "phone", "status", "consent", "createdAt", "checkedIn"]
+    },
+    "AuditLog": {
+      "title": "AuditLog",
+      "description": "An audit log entry for administration actions.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique log entry ID." },
+        "eventId": { "type": "string", "description": "Associated event ID." },
+        "timestamp": { "type": "string", "description": "ISO timestamp." },
+        "adminUser": { "type": "string", "description": "Email of admin who performed the action." },
+        "action": { "type": "string", "description": "Action name." },
+        "details": { "type": "string", "description": "Detailed log description." }
+      },
+      "required": ["id", "eventId", "timestamp", "adminUser", "action", "details"]
+    }
+  },
+  "firestore": {
+    "/events/{eventId}": {
+      "schema": "Event",
+      "description": "Collection of events managed by the digital attendance system."
+    },
+    "/participants/{participantId}": {
+      "schema": "Participant",
+      "description": "Collection of registered participants across all events."
+    },
+    "/auditLogs/{logId}": {
+      "schema": "AuditLog",
+      "description": "Collection of audit logs documenting admin activity."
+    }
+  }
+}

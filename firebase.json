@@ -1,0 +1,8 @@
+{
+  "firestore": [
+    {
+      "database": "ai-studio-digitalattendanc-93048ee2-2e88-498f-aaf5-a8f4e0ccfbba",
+      "rules": "firestore.rules"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Digital Attendance & Registration System IKA UII",
+  "description": "Sistem Registrasi & Check-in Digital khusus untuk Pelantikan Pengurus DPW IKA UII D.I. Yogyakarta dan Event IKA UII lainnya.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,113 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // 1. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+    
+    // Reusable global helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return request.auth != null;
+    }
+    
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+    
+    function incoming() {
+      return request.resource.data;
+    }
+    
+    function existing() {
+      return resource.data;
+    }
+    
+    // Schemas & Validations
+    function isValidEvent(data) {
+      return (!('id' in data) || data.id is string && data.id.size() <= 128)
+        && data.title is string && data.title.size() <= 200
+        && (!('description' in data) || data.description is string)
+        && (!('organizer' in data) || data.organizer is string)
+        && data.date is string && data.date.size() <= 20
+        && data.time is string && data.time.size() <= 10
+        && data.location is string && data.location.size() <= 500
+        && (!('mapsUrl' in data) || data.mapsUrl is string)
+        && (!('bannerUrl' in data) || data.bannerUrl is string)
+        && (!('logoUrl' in data) || data.logoUrl is string)
+        && (!('registrationDeadline' in data) || data.registrationDeadline is string)
+        && data.isActive is bool
+        && data.isScannerActive is bool
+        && data.isRegistrationActive is bool
+        && (!('isArchived' in data) || data.isArchived is bool)
+        && data.successMessage is string && data.successMessage.size() <= 1000;
+    }
+    
+    function isValidParticipant(data) {
+      return data.id is string && data.id.size() <= 50
+        && data.eventId is string && data.eventId.size() <= 128
+        && data.name is string && data.name.size() <= 200
+        && data.phone is string && data.phone.size() <= 30
+        && (!('email' in data) || data.email is string && data.email.size() <= 100)
+        && data.status is string && (data.status == 'Hadir' || data.status == 'Berhalangan')
+        && (!('reason' in data) || data.reason is string && data.reason.size() <= 1000)
+        && (!('instansi' in data) || data.instansi is string && data.instansi.size() <= 200)
+        && (!('jabatan' in data) || data.jabatan is string && data.jabatan.size() <= 100)
+        && (!('kota' in data) || data.kota is string && data.kota.size() <= 100)
+        && (!('catatan' in data) || data.catatan is string && data.catatan.size() <= 1000)
+        && data.consent is bool
+        && (!('subscribeNewsletter' in data) || data.subscribeNewsletter is bool)
+        && data.checkedIn is bool;
+    }
+    
+    function isValidAuditLog(data) {
+      return (!('id' in data) || data.id is string && data.id.size() <= 128)
+        && data.eventId is string && data.eventId.size() <= 128
+        && data.adminUser is string && data.adminUser.size() <= 100
+        && data.action is string && data.action.size() <= 100
+        && data.details is string && data.details.size() <= 2000;
+    }
+    
+    // Collection rules
+    match /events/{eventId} {
+      allow get: if isValidId(eventId);
+      allow list: if true; // Everyone can list events to show them on the UI
+      
+      allow create: if isAdmin() && isValidId(eventId) && isValidEvent(incoming());
+      allow update: if isAdmin() && isValidId(eventId) && isValidEvent(incoming());
+      allow delete: if isAdmin() && isValidId(eventId);
+    }
+    
+    match /participants/{participantId} {
+      allow get: if isValidId(participantId); // Anyone can read a ticket to check its QR status
+      
+      // Admin list enforcer
+      allow list: if true;
+      
+      // Create participant (public register)
+      allow create: if isValidId(participantId) && isValidParticipant(incoming()) && (
+        // Must reference an existing event that has registration active
+        exists(/databases/$(database)/documents/events/$(incoming().eventId)) &&
+        get(/databases/$(database)/documents/events/$(incoming().eventId)).data.isRegistrationActive == true
+      );
+      
+      // Update/delete participant (Admin only)
+      allow update: if isAdmin() && isValidId(participantId) && isValidParticipant(incoming());
+      allow delete: if isAdmin() && isValidId(participantId);
+    }
+    
+    match /auditLogs/{logId} {
+      allow get: if isAdmin() && isValidId(logId);
+      allow list: if isAdmin();
+      
+      // Allow creation of logs during admin operations or system tracking
+      allow create: if isAdmin() && isValidId(logId) && isValidAuditLog(incoming());
+      allow update, delete: if false; // Audit logs are immutable
+    }
+  }
+}
