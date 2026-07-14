@@ -1365,8 +1365,8 @@ export default function App() {
                 A
               </div>
               <div>
-                <h2 className="font-display font-bold text-slate-100 text-base">{isAdminRegisterMode ? 'Buat Akun Administrator' : 'Dashboard Administrator'}</h2>
-                <p className="text-xs text-slate-400 leading-relaxed">{isAdminRegisterMode ? 'Daftarkan email dan password baru.' : 'Silakan login dengan kredensial panitia UII Anda.'}</p>
+                <h2 className="font-display font-bold text-slate-100 text-base">Dashboard Administrator</h2>
+                <p className="text-xs text-slate-400 leading-relaxed">Silakan login dengan kredensial panitia Anda.</p>
               </div>
             </div>
 
@@ -1386,7 +1386,7 @@ export default function App() {
                   <input 
                     type="email"
                     required
-                    placeholder="Contoh: 236102601@uii.ac.id"
+                    placeholder="Masukkan email"
                     value={loginForm.email}
                     onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
                     className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 transition-all font-semibold font-mono placeholder:text-slate-400"
@@ -1414,16 +1414,6 @@ export default function App() {
                   <p className="font-bold text-slate-500 dark:text-slate-400">Keamanan Sistem:</p>
                   <p className="mt-0.5">Portal ini dilindungi dengan enkripsi Firebase Authentication. Akses hanya untuk staf dan panitia yang terdaftar.</p>
                 </div>
-                <button 
-                  type="button" 
-                  onClick={() => {
-                    setIsAdminRegisterMode(!isAdminRegisterMode);
-                    setLoginError('');
-                  }} 
-                  className="text-left text-blue-600 dark:text-blue-400 font-bold hover:underline"
-                >
-                  {isAdminRegisterMode ? 'Sudah punya akun? Login di sini.' : 'Belum punya akun admin? Daftar di sini.'}
-                </button>
               </div>
             </div>
 
@@ -1443,7 +1433,7 @@ export default function App() {
                 type="submit"
                 className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 active:bg-blue-700 text-white font-bold text-xs py-3 px-6 rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                {isAdminRegisterMode ? 'Buat Akun Baru' : 'Masuk ke Dashboard'}
+                Masuk ke Dashboard
               </button>
             </div>
           </form>
