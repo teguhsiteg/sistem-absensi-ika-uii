@@ -1,46 +1,27 @@
-import { ref, uploadString, getDownloadURL } from 'firebase/storage';
-import { storage } from './firebase';
 import { sendWhatsAppMessage } from './whatsapp';
-import html2canvas from 'html2canvas';
 
 export const sendTicketViaWhatsApp = async (
-  ticketElement: HTMLElement,
+  ticketElement: HTMLElement | null,
   participantId: string,
   participantPhone: string,
   participantName: string,
   eventTitle: string
 ) => {
   try {
-    // 1. Capture the ticket element as an image
-    const canvas = await html2canvas(ticketElement, {
-      scale: 2, // Higher quality
-      useCORS: true,
-      backgroundColor: '#ffffff'
-    });
+    const websiteUrl = window.location.origin;
     
-    // 2. Convert canvas to base64 data URL (JPEG to save space)
-    const base64Image = canvas.toDataURL('image/jpeg', 0.8);
+    // Construct the WhatsApp message without image
+    const message = `Halo ${participantName},\n\nTerima kasih telah mendaftar untuk acara *${eventTitle}*.\n\nPendaftaran Anda telah berhasil dicatat dengan ID Registrasi: *${participantId}*.\n\nJika Anda belum menyimpan atau melakukan screenshot pada QR Code tiket Anda, silakan kunjungi:\n${websiteUrl}\nLalu gunakan fitur "Cari Tiket Saya" dengan memasukkan Nomor HP atau ID Registrasi Anda.\n\nSampai jumpa di lokasi acara!`;
     
-    // 3. Upload to Firebase Storage
-    const storageRef = ref(storage, `tickets/${participantId}-${Date.now()}.jpg`);
-    await uploadString(storageRef, base64Image, 'data_url');
-    
-    // 4. Get the public download URL
-    const imageUrl = await getDownloadURL(storageRef);
-    
-    // 5. Construct the WhatsApp message
-    const message = `Halo ${participantName},\n\nTerima kasih telah mendaftar untuk acara *${eventTitle}*.\n\nBerikut adalah tiket QR Anda (terlampir pada gambar). Silakan tunjukkan tiket ini kepada panitia saat registrasi ulang di lokasi acara.\n\nID Tiket: ${participantId}\n\nSampai jumpa di lokasi!`;
-    
-    // 6. Send via WhatsApp Gateway (Fonnte)
+    // Send via WhatsApp Gateway (Fonnte)
     await sendWhatsAppMessage({
       phone: participantPhone,
-      message,
-      imageUrl
+      message
     });
     
     return true;
   } catch (error) {
-    console.error('Failed to send ticket via WhatsApp:', error);
+    console.error('Failed to send ticket text via WhatsApp:', error);
     return false;
   }
 };
