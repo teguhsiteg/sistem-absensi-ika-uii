@@ -1452,8 +1452,7 @@ export default function App() {
 
       {/* 6. ADMIN PRIVATE PORTAL PANEL */}
       {route === 'admin-panel' && isAdminLoggedIn && (
-        <div className="flex-1 flex h-screen overflow-hidden bg-slate-100">
-          
+        <div className="flex-1 flex h-screen overflow-hidden bg-slate-100 dark:bg-slate-950 relative">
           {/* Sidebar */}
           <AdminSidebar 
             currentTab={adminTab}
@@ -1467,8 +1466,8 @@ export default function App() {
 
           {/* Main Area container */}
           <main className="flex-1 flex flex-col h-screen overflow-hidden">
-            {/* Header / Utility bar */}
-            <header className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 flex items-center justify-between shadow-2xs shrink-0 z-10">
+            {/* Header / Utility bar - hidden on mobile, shown on desktop */}
+            <header className="hidden md:flex bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 items-center justify-between shadow-2xs shrink-0 z-10">
               <div className="flex items-center gap-3">
                 <div className="bg-slate-100 text-slate-600 dark:text-slate-300 font-bold px-3 py-1.5 rounded-lg text-xs border border-slate-200 dark:border-slate-800/50 hidden md:block">
                   Event: {activeEvent?.title || 'Belum Ada Event Aktif'}
@@ -1496,9 +1495,35 @@ export default function App() {
                 </button>
               </div>
             </header>
+            {/* Mobile top header */}
+            <header className="md:hidden bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between shrink-0 z-10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-display font-bold text-white text-xs shadow-md">UII</div>
+                <div>
+                  <h1 className="font-display font-bold text-sm text-slate-800 dark:text-slate-100">E-Attendance</h1>
+                  <p className="text-[10px] text-slate-400 truncate max-w-[180px]">{activeEvent?.title || 'Belum Ada Event'}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {(adminTab === 'dashboard' || adminTab === 'participants') && (
+                  <button 
+                    onClick={handleExportExcel}
+                    className="bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 font-semibold text-[10px] px-2.5 py-1.5 rounded-lg transition-all flex items-center gap-1 cursor-pointer"
+                  >
+                    <FileSpreadsheet size={13} /> Excel
+                  </button>
+                )}
+                <button 
+                  onClick={syncAllData}
+                  className="p-1.5 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:bg-slate-900 text-slate-500 dark:text-slate-400 rounded-lg cursor-pointer"
+                >
+                  <RefreshCw size={14} />
+                </button>
+              </div>
+            </header>
 
             {/* View Port for Tabs */}
-            <div className="flex-1 overflow-y-auto p-6 md:p-8">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 pb-24 md:pb-6">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={adminTab}
