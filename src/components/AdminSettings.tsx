@@ -517,222 +517,14 @@ export default function AdminSettings({
         </div>
       )}
 
-      {/* CREATE EVENT MODAL DIALOG */}
+      {/* CREATE EVENT MULTI-STEP WIZARD */}
       {showAddEvent && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 overflow-y-auto">
-          <form onSubmit={handleCreateEvent} className="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <div className="p-5 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50 dark:bg-slate-950 flex items-center justify-between">
-              <div>
-                <h3 className="font-display font-bold text-slate-800 dark:text-slate-100 text-base">Buat Event Acara Baru</h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">Mendaftarkan wadah acara baru dalam sistem multi-event</p>
-              </div>
-              <button 
-                type="button"
-                onClick={() => setShowAddEvent(false)}
-                className="p-1.5 rounded-lg hover:bg-slate-200 text-slate-400 hover:text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Nama Event / Acara Baru *</label>
-                <input 
-                  type="text"
-                  required
-                  placeholder="Contoh: Halal Bihalal DPW IKA UII DIY"
-                  value={newEventForm.title}
-                  onChange={(e) => setNewEventForm({ ...newEventForm, title: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all font-semibold"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Penyelenggara / Organizer</label>
-                  <input 
-                    type="text"
-                    placeholder="Contoh: DPW IKA UII DIY"
-                    value={newEventForm.organizer || ''}
-                    onChange={(e) => setNewEventForm({ ...newEventForm, organizer: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Deskripsi Singkat</label>
-                  <input 
-                    type="text"
-                    placeholder="Contoh: Acara ngumpul bareng..."
-                    value={newEventForm.description || ''}
-                    onChange={(e) => setNewEventForm({ ...newEventForm, description: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Tanggal Acara *</label>
-                  <input 
-                    type="date"
-                    required
-                    value={newEventForm.date}
-                    onChange={(e) => setNewEventForm({ ...newEventForm, date: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all font-semibold"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Waktu Mulai *</label>
-                  <input 
-                    type="time"
-                    required
-                    value={newEventForm.time}
-                    onChange={(e) => setNewEventForm({ ...newEventForm, time: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Tempat / Lokasi *</label>
-                <input 
-                  type="text"
-                  required
-                  placeholder="Contoh: Auditorium Kahar Muzakkir UII, Sleman"
-                  value={newEventForm.location}
-                  onChange={(e) => setNewEventForm({ ...newEventForm, location: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Google Maps URL</label>
-                <input 
-                  type="url"
-                  placeholder="https://maps.app.goo.gl/..."
-                  value={newEventForm.mapsUrl}
-                  onChange={(e) => setNewEventForm({ ...newEventForm, mapsUrl: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all font-mono"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Banner Image URL</label>
-                  <input 
-                    type="url"
-                    placeholder="https://..."
-                    value={newEventForm.bannerUrl}
-                    onChange={(e) => setNewEventForm({ ...newEventForm, bannerUrl: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all font-mono"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Logo Image URL</label>
-                  <input 
-                    type="url"
-                    placeholder="https://..."
-                    value={newEventForm.logoUrl}
-                    onChange={(e) => setNewEventForm({ ...newEventForm, logoUrl: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all font-mono"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Batas Akhir Registrasi (Deadline)</label>
-                <input 
-                  type="datetime-local"
-                  value={newEventForm.registrationDeadline ? newEventForm.registrationDeadline.substring(0, 16) : ''}
-                  onChange={(e) => setNewEventForm({ ...newEventForm, registrationDeadline: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Pesan Sukses Registrasi</label>
-                <textarea 
-                  rows={2}
-                  value={newEventForm.successMessage}
-                  onChange={(e) => setNewEventForm({ ...newEventForm, successMessage: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Deskripsi Lengkap Event (HTML/Teks)</label>
-                <textarea 
-                  rows={3}
-                  value={newEventForm.fullDescription}
-                  onChange={(e) => setNewEventForm({ ...newEventForm, fullDescription: e.target.value })}
-                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Scanner PIN</label>
-                  <input 
-                    type="text"
-                    value={newEventForm.scannerPin}
-                    onChange={(e) => setNewEventForm({ ...newEventForm, scannerPin: e.target.value })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all font-mono"
-                    placeholder="PIN Panitia"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">Instagram URL</label>
-                  <input 
-                    type="url"
-                    value={newEventForm.socialMedia.instagram}
-                    onChange={(e) => setNewEventForm({ ...newEventForm, socialMedia: { ...newEventForm.socialMedia, instagram: e.target.value } })}
-                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-teal-500 transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center gap-3 py-2">
-                  <input 
-                    type="checkbox"
-                    id="newRegActive"
-                    checked={newEventForm.isRegistrationActive}
-                    onChange={(e) => setNewEventForm({ ...newEventForm, isRegistrationActive: e.target.checked })}
-                    className="w-4 h-4 text-teal-600 border-slate-300 rounded-sm focus:ring-teal-500 cursor-pointer"
-                  />
-                  <label htmlFor="newRegActive" className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 cursor-pointer">Aktifkan Registrasi</label>
-                </div>
-                <div className="flex items-center gap-3 py-2">
-                  <input 
-                    type="checkbox"
-                    id="newScanActive"
-                    checked={newEventForm.isScannerActive}
-                    onChange={(e) => setNewEventForm({ ...newEventForm, isScannerActive: e.target.checked })}
-                    className="w-4 h-4 text-teal-600 border-slate-300 rounded-sm focus:ring-teal-500 cursor-pointer"
-                  />
-                  <label htmlFor="newScanActive" className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300 cursor-pointer">Aktifkan Scanner</label>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50 dark:bg-slate-950 flex justify-end gap-2">
-              <button 
-                type="button"
-                onClick={() => setShowAddEvent(false)}
-                className="px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 rounded-xl text-sm font-semibold transition-all cursor-pointer"
-              >
-                Batal
-              </button>
-              <button 
-                type="submit"
-                className="px-5 py-2 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-sm font-semibold transition-all cursor-pointer shadow-md shadow-teal-900/10"
-              >
-                Buat Event
-              </button>
-            </div>
-          </form>
-        </div>
+        <CreateEventWizard
+          newEventForm={newEventForm}
+          setNewEventForm={setNewEventForm}
+          onSubmit={handleCreateEvent}
+          onClose={() => setShowAddEvent(false)}
+        />
       )}
 
       <ConfirmModal
@@ -770,6 +562,271 @@ export default function AdminSettings({
           setEventToManage(null);
         }}
       />
+    </div>
+  );
+}
+
+// ========== MULTI-STEP CREATE EVENT WIZARD ==========
+interface WizardProps {
+  newEventForm: any;
+  setNewEventForm: (form: any) => void;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
+  onClose: () => void;
+}
+
+function CreateEventWizard({ newEventForm, setNewEventForm, onSubmit, onClose }: WizardProps) {
+  const [step, setStep] = React.useState(0);
+
+  const steps = [
+    { title: 'Info Dasar', icon: FileText, desc: 'Nama, penyelenggara, deskripsi' },
+    { title: 'Waktu & Lokasi', icon: Calendar, desc: 'Tanggal, waktu, tempat acara' },
+    { title: 'Media & Deskripsi', icon: Image, desc: 'Banner, logo, deskripsi lengkap' },
+    { title: 'Pengaturan', icon: Settings, desc: 'PIN, sosmed, opsi lanjutan' },
+  ];
+
+  const canNext = () => {
+    if (step === 0) return !!newEventForm.title;
+    if (step === 1) return !!newEventForm.date && !!newEventForm.time && !!newEventForm.location;
+    return true;
+  };
+
+  const handleNext = () => { if (step < steps.length - 1) setStep(step + 1); };
+  const handleBack = () => { if (step > 0) setStep(step - 1); };
+
+  const handleFinalSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit(e);
+  };
+
+  const inputCls = "w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500 transition-all";
+  const labelCls = "block text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-1.5";
+
+  return (
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full shadow-xl overflow-hidden">
+        {/* Header */}
+        <div className="p-4 md:p-5 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50 dark:bg-slate-950 flex items-center justify-between">
+          <div>
+            <h3 className="font-display font-bold text-slate-800 dark:text-slate-100 text-base">Buat Event Baru</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">{steps[step].desc}</p>
+          </div>
+          <button 
+            type="button"
+            onClick={onClose}
+            className="p-1.5 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        {/* Step Indicator */}
+        <div className="px-4 md:px-6 pt-4 pb-2">
+          <div className="flex items-center gap-1">
+            {steps.map((s, i) => {
+              const StepIcon = s.icon;
+              const isDone = i < step;
+              const isCurrent = i === step;
+              return (
+                <React.Fragment key={i}>
+                  <button
+                    type="button"
+                    onClick={() => i <= step && setStep(i)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
+                      isCurrent 
+                        ? 'bg-teal-600 text-white shadow-sm' 
+                        : isDone 
+                          ? 'bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400' 
+                          : 'text-slate-400 dark:text-slate-500'
+                    }`}
+                  >
+                    {isDone ? <Check size={12} /> : <StepIcon size={12} />}
+                    <span className="hidden sm:inline">{s.title}</span>
+                    <span className="sm:hidden">{i + 1}</span>
+                  </button>
+                  {i < steps.length - 1 && (
+                    <div className={`flex-1 h-0.5 rounded-full ${i < step ? 'bg-teal-400' : 'bg-slate-200 dark:bg-slate-800'}`} />
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Step Content */}
+        <form onSubmit={handleFinalSubmit}>
+          <div className="px-4 md:px-6 py-4 space-y-4 max-h-[50vh] overflow-y-auto">
+
+            {/* STEP 0: Info Dasar */}
+            {step === 0 && (
+              <>
+                <div>
+                  <label className={labelCls}>Nama Event / Acara *</label>
+                  <input type="text" required placeholder="Contoh: Halal Bihalal DPW IKA UII DIY" value={newEventForm.title}
+                    onChange={(e) => setNewEventForm({ ...newEventForm, title: e.target.value })}
+                    className={`${inputCls} font-semibold`} />
+                </div>
+                <div>
+                  <label className={labelCls}>Penyelenggara / Organizer</label>
+                  <input type="text" placeholder="Contoh: DPW IKA UII DIY" value={newEventForm.organizer || ''}
+                    onChange={(e) => setNewEventForm({ ...newEventForm, organizer: e.target.value })}
+                    className={inputCls} />
+                </div>
+                <div>
+                  <label className={labelCls}>Deskripsi Singkat</label>
+                  <input type="text" placeholder="Contoh: Acara silaturahmi tahunan..." value={newEventForm.description || ''}
+                    onChange={(e) => setNewEventForm({ ...newEventForm, description: e.target.value })}
+                    className={inputCls} />
+                </div>
+              </>
+            )}
+
+            {/* STEP 1: Waktu & Lokasi */}
+            {step === 1 && (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelCls}>Tanggal Acara *</label>
+                    <input type="date" required value={newEventForm.date}
+                      onChange={(e) => setNewEventForm({ ...newEventForm, date: e.target.value })}
+                      className={`${inputCls} font-semibold`} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Waktu Mulai *</label>
+                    <input type="time" required value={newEventForm.time}
+                      onChange={(e) => setNewEventForm({ ...newEventForm, time: e.target.value })}
+                      className={inputCls} />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Tempat / Lokasi *</label>
+                  <input type="text" required placeholder="Contoh: Auditorium Kahar Muzakkir UII"
+                    value={newEventForm.location}
+                    onChange={(e) => setNewEventForm({ ...newEventForm, location: e.target.value })}
+                    className={inputCls} />
+                </div>
+                <div>
+                  <label className={labelCls}>Google Maps URL</label>
+                  <input type="url" placeholder="https://maps.app.goo.gl/..." value={newEventForm.mapsUrl}
+                    onChange={(e) => setNewEventForm({ ...newEventForm, mapsUrl: e.target.value })}
+                    className={`${inputCls} font-mono`} />
+                </div>
+                <div>
+                  <label className={labelCls}>Batas Akhir Registrasi</label>
+                  <input type="datetime-local"
+                    value={newEventForm.registrationDeadline ? newEventForm.registrationDeadline.substring(0, 16) : ''}
+                    onChange={(e) => setNewEventForm({ ...newEventForm, registrationDeadline: e.target.value })}
+                    className={`${inputCls} font-mono`} />
+                </div>
+              </>
+            )}
+
+            {/* STEP 2: Media & Deskripsi */}
+            {step === 2 && (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelCls}>Banner Image URL</label>
+                    <input type="url" placeholder="https://..." value={newEventForm.bannerUrl}
+                      onChange={(e) => setNewEventForm({ ...newEventForm, bannerUrl: e.target.value })}
+                      className={`${inputCls} font-mono text-xs`} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Logo Image URL</label>
+                    <input type="url" placeholder="https://..." value={newEventForm.logoUrl}
+                      onChange={(e) => setNewEventForm({ ...newEventForm, logoUrl: e.target.value })}
+                      className={`${inputCls} font-mono text-xs`} />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Deskripsi Lengkap Event</label>
+                  <textarea rows={4} placeholder="Deskripsi detail tentang event..." value={newEventForm.fullDescription}
+                    onChange={(e) => setNewEventForm({ ...newEventForm, fullDescription: e.target.value })}
+                    className={inputCls} />
+                </div>
+                <div>
+                  <label className={labelCls}>Pesan Sukses Registrasi</label>
+                  <textarea rows={2} placeholder="Pesan yang tampil setelah peserta berhasil mendaftar..."
+                    value={newEventForm.successMessage}
+                    onChange={(e) => setNewEventForm({ ...newEventForm, successMessage: e.target.value })}
+                    className={inputCls} />
+                </div>
+              </>
+            )}
+
+            {/* STEP 3: Pengaturan Lanjutan */}
+            {step === 3 && (
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className={labelCls}>Scanner PIN (Untuk Panitia)</label>
+                    <input type="text" placeholder="Contoh: 123456" value={newEventForm.scannerPin}
+                      onChange={(e) => setNewEventForm({ ...newEventForm, scannerPin: e.target.value })}
+                      className={`${inputCls} font-mono`} />
+                  </div>
+                  <div>
+                    <label className={labelCls}>Instagram URL</label>
+                    <input type="url" placeholder="https://instagram.com/..." value={newEventForm.socialMedia.instagram}
+                      onChange={(e) => setNewEventForm({ ...newEventForm, socialMedia: { ...newEventForm.socialMedia, instagram: e.target.value } })}
+                      className={inputCls} />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelCls}>Website URL</label>
+                  <input type="url" placeholder="https://..." value={newEventForm.socialMedia?.website || ''}
+                    onChange={(e) => setNewEventForm({ ...newEventForm, socialMedia: { ...newEventForm.socialMedia, website: e.target.value } })}
+                    className={inputCls} />
+                </div>
+                <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <input type="checkbox" id="wizRegActive" checked={newEventForm.isRegistrationActive}
+                      onChange={(e) => setNewEventForm({ ...newEventForm, isRegistrationActive: e.target.checked })}
+                      className="w-4 h-4 text-teal-600 rounded-sm cursor-pointer" />
+                    <label htmlFor="wizRegActive" className="text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer">Registrasi Aktif</label>
+                  </div>
+                  <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-950 rounded-xl border border-slate-200 dark:border-slate-800">
+                    <input type="checkbox" id="wizScanActive" checked={newEventForm.isScannerActive}
+                      onChange={(e) => setNewEventForm({ ...newEventForm, isScannerActive: e.target.checked })}
+                      className="w-4 h-4 text-teal-600 rounded-sm cursor-pointer" />
+                    <label htmlFor="wizScanActive" className="text-xs font-bold text-slate-600 dark:text-slate-300 cursor-pointer">Scanner Aktif</label>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Footer Navigation */}
+          <div className="p-4 border-t border-slate-100 dark:border-slate-800/60 bg-slate-50 dark:bg-slate-950 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={step === 0 ? onClose : handleBack}
+              className="px-4 py-2.5 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-xl text-sm font-semibold transition-all cursor-pointer"
+            >
+              {step === 0 ? 'Batal' : '← Kembali'}
+            </button>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-slate-400 font-medium">{step + 1} / {steps.length}</span>
+              {step < steps.length - 1 ? (
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!canNext()}
+                  className="px-5 py-2.5 bg-teal-600 hover:bg-teal-500 disabled:bg-slate-300 disabled:cursor-not-allowed text-white rounded-xl text-sm font-semibold transition-all cursor-pointer shadow-sm"
+                >
+                  Lanjut →
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="px-5 py-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-sm font-semibold transition-all cursor-pointer shadow-md shadow-teal-900/10 flex items-center gap-1.5"
+                >
+                  <Check size={15} /> Buat Event
+                </button>
+              )}
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

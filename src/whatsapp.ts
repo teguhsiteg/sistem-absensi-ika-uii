@@ -5,33 +5,28 @@ export interface SendWhatsAppParams {
 }
 
 export const sendWhatsAppMessage = async ({ phone, message, imageUrl }: SendWhatsAppParams) => {
-  const token = import.meta.env.VITE_FONNTE_TOKEN;
-  
-  if (!token) {
-    console.warn("VITE_FONNTE_TOKEN is not set. WhatsApp message simulated.");
-    console.log("To:", phone);
-    console.log("Message:", message);
-    if (imageUrl) console.log("Image URL:", imageUrl);
-    return { status: true, detail: "Simulated sending because no API token is configured." };
-  }
-
   try {
-    const formData = new FormData();
-    formData.append('target', phone);
-    formData.append('message', message);
-    if (imageUrl) {
-      formData.append('url', imageUrl); // Fonnte uses 'url' field for sending media (image/pdf)
-    }
+    const payload = {
+      phone,
+      message,
+      imageUrl
+    };
 
-    const response = await fetch('https://api.fonnte.com/send', {
+    // Calling the Netlify Serverless Function proxy instead of Fonnte API directly to prevent CORS/token exposure.
+    const response = await fetch('/.netlify/functions/send-wa', {
       method: 'POST',
       headers: {
-        'Authorization': token
+        'Content-Type': 'application/json'
       },
-      body: formData
+      body: JSON.stringify(payload)
     });
 
     const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.error || 'Failed to send WhatsApp message via proxy');
+    }
+
     return data;
   } catch (error) {
     console.error('Error sending WhatsApp message:', error);
