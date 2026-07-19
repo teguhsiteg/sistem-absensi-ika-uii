@@ -376,7 +376,7 @@ export default function PlatformLanding({ events, onSelectEvent, onNavigateToAdm
                         )}
                         <div className="absolute top-3 left-3">
                           <span className="px-2.5 py-1 rounded-md bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-[10px] tracking-wide uppercase border border-slate-300 dark:border-slate-700">
-                            Completed
+                            Selesai
                           </span>
                         </div>
                       </div>

@@ -252,7 +252,7 @@ export default function App() {
   const fetchAllEvents = async () => {
     try {
       const snapshot = await getDocs(collection(db, 'events'));
-      const data = snapshot.docs.map(d => d.data() as EventConfig).filter(e => !e.isArchived);
+      const data = snapshot.docs.map(d => d.data() as EventConfig);
       setEvents(data);
     } catch (err) {
       console.error('Fetch events error:', err);

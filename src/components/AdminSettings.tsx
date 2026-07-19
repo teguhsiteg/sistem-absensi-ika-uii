@@ -167,7 +167,7 @@ export default function AdminSettings({
           >
             {events.map(e => (
               <option key={e.id} value={e.id}>
-                {e.title} {e.isActive ? '(Aktif)' : ''}
+                {e.title} {e.isArchived ? '(Diarsipkan)' : e.isActive ? '(Aktif)' : ''}
               </option>
             ))}
           </select>
@@ -401,16 +401,28 @@ export default function AdminSettings({
 
             <div className="flex justify-between items-center pt-2">
               <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEventToManage(selectedEventId);
-                    setArchiveModalOpen(true);
-                  }}
-                  className="bg-amber-100 hover:bg-amber-200 text-amber-700 font-semibold text-sm px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-sm"
-                >
-                  <Archive size={16} /> Arsipkan
-                </button>
+                {editForm.isArchived ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onUpdateEvent(selectedEventId, { isArchived: false });
+                    }}
+                    className="bg-blue-100 hover:bg-blue-200 text-blue-700 font-semibold text-sm px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+                  >
+                    <Archive size={16} /> Buka Arsip
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEventToManage(selectedEventId);
+                      setArchiveModalOpen(true);
+                    }}
+                    className="bg-amber-100 hover:bg-amber-200 text-amber-700 font-semibold text-sm px-4 py-2.5 rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+                  >
+                    <Archive size={16} /> Arsipkan
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => {
