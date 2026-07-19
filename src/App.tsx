@@ -59,11 +59,31 @@ const adminFetch = async (url: string, options: RequestInit = {}) => {
 const generateGoogleCalendarUrl = (event: EventConfig) => {
   const title = encodeURIComponent(event.title || 'Event');
   const location = encodeURIComponent(event.location || '');
-  const details = encodeURIComponent('Anda telah terdaftar untuk: ' + event.title + '\n\nCek detail: ' + window.location.href);
   
-  // Try to parse basic dates or fallback to no explicit date (let user set it)
-  // For standard Google Calendar format without dates, it still opens the composer.
-  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}`;
+  const descriptionText = event.description ? event.description + '\n\n' : '';
+  const details = encodeURIComponent(descriptionText + 'Anda telah terdaftar untuk: ' + event.title + '\n\nCek detail tiket: ' + window.location.href);
+  
+  let datesParam = '';
+  if (event.date && event.time) {
+    try {
+      const startDateStr = event.date.replace(/-/g, '');
+      const startTimeStr = event.time.replace(/:/g, '') + '00';
+      
+      const startObj = new Date(`${event.date}T${event.time}:00`);
+      // Default duration 3 hours
+      const endObj = new Date(startObj.getTime() + 3 * 60 * 60 * 1000);
+      
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      const endDateStr = `${endObj.getFullYear()}${pad(endObj.getMonth() + 1)}${pad(endObj.getDate())}`;
+      const endTimeStr = `${pad(endObj.getHours())}${pad(endObj.getMinutes())}00`;
+      
+      datesParam = `&dates=${startDateStr}T${startTimeStr}/${endDateStr}T${endTimeStr}`;
+    } catch (e) {
+      // Ignore date parsing error
+    }
+  }
+  
+  return `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}${datesParam}`;
 };
 
 export default function App() {
@@ -204,23 +224,13 @@ export default function App() {
   const [loginError, setLoginError] = React.useState('');
   const [isAdminRegisterMode, setIsAdminRegisterMode] = React.useState(false);
 
-  // WhatsApp auto-send after registration
+  // WhatsApp auto-send after registration - removed per user request
   React.useEffect(() => {
     if (route === 'public-ticket' && activeTicket && activeEvent && isNewRegistration && ticketRef.current) {
-      setIsNewRegistration(false); // Only trigger once
-      showToast('Sedang memproses tiket & mengirim WhatsApp...', 'info');
-      sendTicketViaWhatsApp(
-        ticketRef.current,
-        activeTicket.id,
-        activeTicket.phone,
-        activeTicket.name,
-        activeEvent.title
-      ).then(success => {
-        if (success) showToast('Tiket berhasil dikirim ke WhatsApp Anda!', 'success');
-        else showToast('Gagal mengirim WhatsApp, tapi tiket berhasil dibuat.', 'error');
-      });
+      setIsNewRegistration(false); // Only trigger once to avoid loop
+      // Intentionally not sending whatsapp or toast automatically anymore.
     }
-  }, [route, activeTicket, activeEvent, isNewRegistration, showToast]);
+  }, [route, activeTicket, activeEvent, isNewRegistration]);
 
   // --- API BACKEND COMMUNICATORS ---
 
@@ -860,6 +870,24 @@ export default function App() {
                 </span>
               </div>
 
+              {/* Public Event Statistics */}
+              {stats && (
+                <div className="flex gap-4 justify-center mt-2 max-w-2xl">
+                  <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-xl border border-white/20 text-center">
+                    <p className="text-2xl font-black text-white">{stats.totalRegistered}</p>
+                    <p className="text-[10px] uppercase font-bold text-slate-300">Total Pendaftar</p>
+                  </div>
+                  <div className="bg-blue-500/20 backdrop-blur-md px-4 py-2 rounded-xl border border-blue-400/30 text-center">
+                    <p className="text-2xl font-black text-blue-100">{stats.totalHadir}</p>
+                    <p className="text-[10px] uppercase font-bold text-blue-200">Hadir</p>
+                  </div>
+                  <div className="bg-amber-500/20 backdrop-blur-md px-4 py-2 rounded-xl border border-amber-400/30 text-center">
+                    <p className="text-2xl font-black text-amber-100">{stats.totalBerhalangan}</p>
+                    <p className="text-[10px] uppercase font-bold text-amber-200">Izin</p>
+                  </div>
+                </div>
+              )}
+
               {/* Call to Actions */}
               <div className="flex flex-col sm:flex-direction sm:flex-row gap-3 pt-4 justify-center w-full max-w-xs sm:max-w-md">
                 {activeEvent.isRegistrationActive ? (
@@ -1176,17 +1204,27 @@ export default function App() {
                 {activeEvent.successMessage}
               </p>
 
-              {/* HUGE QR CODE */}
-              <div className="flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/50 p-4 rounded-2xl relative">
-                {ticketQrUrl ? (
-                  <img src={ticketQrUrl} alt="Ticket QR" className="w-52 h-52 bg-white dark:bg-slate-900 p-2 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs dark:shadow-none" />
-                ) : (
-                  <div className="w-52 h-52 bg-slate-200 animate-pulse rounded-xl"></div>
-                )}
-                <span className="text-xs font-mono font-black tracking-widest mt-3.5 bg-slate-100 text-slate-700 dark:text-slate-200 px-3 py-1 rounded border border-slate-200 dark:border-slate-800/50 shadow-2xs">
-                  {activeTicket.id}
-                </span>
-              </div>
+              {/* HUGE QR CODE - ONLY SHOW IF ATTENDING */}
+              {activeTicket.status === 'Hadir' ? (
+                <div className="flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800/50 p-4 rounded-2xl relative">
+                  {ticketQrUrl ? (
+                    <img src={ticketQrUrl} alt="Ticket QR" className="w-52 h-52 bg-white dark:bg-slate-900 p-2 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs dark:shadow-none" />
+                  ) : (
+                    <div className="w-52 h-52 bg-slate-200 animate-pulse rounded-xl"></div>
+                  )}
+                  <span className="text-xs font-mono font-black tracking-widest mt-3.5 bg-slate-100 text-slate-700 dark:text-slate-200 px-3 py-1 rounded border border-slate-200 dark:border-slate-800/50 shadow-2xs">
+                    {activeTicket.id}
+                  </span>
+                </div>
+              ) : (
+                <div className="p-4 bg-slate-100 dark:bg-slate-800/50 rounded-2xl text-slate-600 dark:text-slate-300 font-semibold flex flex-col items-center gap-2 border border-slate-200 dark:border-slate-800">
+                  <span className="p-2 bg-slate-200 dark:bg-slate-700 rounded-full">
+                    <Info size={24} className="text-slate-500 dark:text-slate-400" />
+                  </span>
+                  <p>Anda telah mengkonfirmasi Berhalangan hadir.</p>
+                  <p className="text-xs text-slate-500 font-normal mt-1">Terima kasih atas informasi Anda. Tidak diperlukan Scan QR Code.</p>
+                </div>
+              )}
 
               {/* Participant Details Table */}
               <div className="border-t border-dashed border-slate-200 dark:border-slate-800 pt-5 text-left text-xs space-y-2 text-slate-600 dark:text-slate-300">
@@ -1213,12 +1251,14 @@ export default function App() {
 
             {/* Ticket Footer print cut layout */}
             <div className="p-4 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800/60 flex flex-col gap-2">
-              <button 
-                onClick={handleDownloadTicketQr}
-                className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-sm shadow-blue-900/10"
-              >
-                <Download size={14} /> Download QR Code
-              </button>
+              {activeTicket.status === 'Hadir' && (
+                <button 
+                  onClick={handleDownloadTicketQr}
+                  className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-sm shadow-blue-900/10"
+                >
+                  <Download size={14} /> Download QR Code
+                </button>
+              )}
               
               <div className="grid grid-cols-2 gap-2">
                 <a 
